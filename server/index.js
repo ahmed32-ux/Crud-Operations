@@ -8,11 +8,11 @@ const cors = require("cors");
 const app = express();
 const PORT = 8000;
 
-// Body parsing middleware
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
-// Routes (middleware ke baad)
+
 app.use("/book", bookRouter);
 
 // Home route
@@ -20,7 +20,7 @@ app.get("/", (req, res) => {
     res.send("Hello world");
 });
 
-// Connect to MongoDB, then start server
+// Connect to MongoDB 
 mongoose.connect("mongodb://127.0.0.1:27017/crud-ops")
     .then(() => {
         console.log("Database connected successfully");
