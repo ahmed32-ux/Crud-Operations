@@ -11,7 +11,7 @@ const handleBookStore = async (req, res) => {
 
         const { bookName, bookTitle, Author, price } = req.body || {};
 
-        // Validate required fields
+
         if (
             typeof bookName !== "string" || !bookName.trim() ||
             typeof bookTitle !== "string" || !bookTitle.trim() ||
@@ -117,7 +117,7 @@ const handleBookDeleteController = async (req, res) => {
         });
     }
 };
-// Export both controllers
+
 module.exports = {
     handleBookStore,
     handleBookListsController,
