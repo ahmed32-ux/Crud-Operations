@@ -8,10 +8,6 @@ const cors = require("cors");
 const app = express();
 const PORT = 8000;
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 4840dc2 (Add book update functionality)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
@@ -23,11 +19,7 @@ app.get("/", (req, res) => {
     res.send("Hello world");
 });
 
-<<<<<<< HEAD
-// Connect to MongoDB 
-=======
 // Connect to MongoDB
->>>>>>> 4840dc2 (Add book update functionality)
 mongoose.connect("mongodb://127.0.0.1:27017/crud-ops")
     .then(() => {
         console.log("Database connected successfully");
