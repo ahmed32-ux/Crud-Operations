@@ -118,8 +118,6 @@ const handleBookDeleteController = async (req, res) => {
     }
 };
 
-<<<<<<< HEAD
-=======
 // Edit/Update
 const handleBookUpdateController = async(req,res) =>{
     try {
@@ -159,7 +157,6 @@ const handleBookUpdateController = async(req,res) =>{
 }
 
 
->>>>>>> 4840dc2 (Add book update functionality)
 module.exports = {
     handleBookStore,
     handleBookListsController,

@@ -12,13 +12,12 @@ function Home() {
   });
 
   const [booklists, setBookList] = useState([]);
+  const [editingId, setEditingId] = useState(null);
 
   // GET: Fetch all books
   const getAllbookList = async () => {
     try {
       const { data } = await bookBaseUrl.get("booklists");
-
-      // Backend response: { books: [...] }
       setBookList(data?.books || []);
     } catch (error) {
       console.log(error.response?.data || error.message);
@@ -28,24 +27,8 @@ function Home() {
   useEffect(() => {
     getAllbookList();
   }, []);
-  const [editingId, setEditingId] = useState(null);
-  const handleEdit = (book) => {
-    setEditingId(book._id);
 
-    setBookForm({
-        bookName: book.bookName || "",
-        bookTitle: book.bookTitle || "",
-        Author: book.Author || "",
-        price: book.price ?? "",
-        publishDate: book.publishDate
-            ? book.publishDate.slice(0, 10)
-            : ""
-    });
-};
-
-
-
-  // Handle input changes
+  // input changes
   const handleOnChange = (e) => {
     const { name, value } = e.target;
 
@@ -70,7 +53,10 @@ function Home() {
       return;
     }
 
-    if (!Number.isFinite(Number(bookForm.price)) || Number(bookForm.price) < 0) {
+    if (
+      !Number.isFinite(Number(bookForm.price)) ||
+      Number(bookForm.price) < 0
+    ) {
       alert("Please enter a valid price");
       return;
     }
@@ -81,10 +67,8 @@ function Home() {
       if (data?.Success) {
         alert(data.Message || "Book added successfully!");
 
-        // Refresh books table
         await getAllbookList();
 
-        // Clear form
         setBookForm({
           bookName: "",
           bookTitle: "",
@@ -101,57 +85,104 @@ function Home() {
       );
     }
   };
+
+  // DELETE 
   const handleDelete = async (id) => {
-  try {
-    const { data } = await bookBaseUrl.delete("deletebook", {
-      data: { id },
-      
-    });
-    console.log("Book ID:", id);
+    try {
+      const { data } = await bookBaseUrl.delete("deletebook", {
+        data: { id },
+      });
 
-    if (data?.Success) {
-      alert(data.Message || "Book deleted successfully!");
-      await getAllbookList();
-    } else {
-      alert(data?.Message || "Book not found");
+      if (data?.Success) {
+        alert(data.Message || "Book deleted successfully!");
+        await getAllbookList();
+      } else {
+        alert(data?.Message || "Book not found");
+      }
+    } catch (error) {
+      console.error(error.response?.data || error.message);
+
+      alert(
+        error.response?.data?.Message || "Failed to delete book"
+      );
     }
-  } catch (error) {
-    console.error(error.response?.data || error.message);
-    alert(error.response?.data?.Message || "Failed to delete book");
-  }
-};
+  };
 
-// update request shared
-const handleUpdate = async (e) => {
+  // EDIT 
+  const handleEdit = (book) => {
+    setEditingId(book._id);
+
+    setBookForm({
+      bookName: book.bookName || "",
+      bookTitle: book.bookTitle || "",
+      Author: book.Author || "",
+      price: book.price ?? "",
+      publishDate: book.publishDate
+        ? String(book.publishDate).slice(0, 10)
+        : "",
+    });
+  };
+
+  // UPDATE 
+  const handleUpdate = async (e) => {
     e.preventDefault();
 
-    try {
-        const response = await bookBaseUrl.put(
-            `/${editingId}`,
-            bookForm
-        );
-
-        if (response.data.Success) {
-            alert("Book updated successfully!");
-
-            setEditingId(null);
-
-            setBookForm({
-                bookName: "",
-                bookTitle: "",
-                Author: "",
-                price: "",
-                publishDate: ""
-            });
-
-            // Yahan apna existing GET function call karna
-            // taake updated books list dobara load ho.
-        }
-    } catch (error) {
-        console.error("Update error:", error.response?.data || error.message);
-        alert("Failed to update book");
+    if (!editingId) {
+      alert("Please select a book to edit");
+      return;
     }
-};
+
+    if (
+      !bookForm.bookName.trim() ||
+      !bookForm.bookTitle.trim() ||
+      !bookForm.Author.trim() ||
+      bookForm.price === "" ||
+      bookForm.publishDate === ""
+    ) {
+      alert("All fields are required");
+      return;
+    }
+
+    if (
+      !Number.isFinite(Number(bookForm.price)) ||
+      Number(bookForm.price) < 0
+    ) {
+      alert("Please enter a valid price");
+      return;
+    }
+
+    try {
+      const { data } = await bookBaseUrl.put(
+        `/${editingId}`,
+        bookForm
+      );
+
+      if (data?.Success) {
+        alert(data.Message || "Book updated successfully!");
+
+        setEditingId(null);
+
+        setBookForm({
+          bookName: "",
+          bookTitle: "",
+          Author: "",
+          price: "",
+          publishDate: "",
+        });
+
+        await getAllbookList();
+      }
+    } catch (error) {
+      console.error(
+        "Update error:",
+        error.response?.data || error.message
+      );
+
+      alert(
+        error.response?.data?.Message || "Failed to update book"
+      );
+    }
+  };
 
   return (
     <div className="min-h-screen bg-slate-950 p-6 md:p-10">
