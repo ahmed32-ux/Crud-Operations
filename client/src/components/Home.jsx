@@ -28,7 +28,20 @@ function Home() {
   useEffect(() => {
     getAllbookList();
   }, []);
-  
+  const [editingId, setEditingId] = useState(null);
+  const handleEdit = (book) => {
+    setEditingId(book._id);
+
+    setBookForm({
+        bookName: book.bookName || "",
+        bookTitle: book.bookTitle || "",
+        Author: book.Author || "",
+        price: book.price ?? "",
+        publishDate: book.publishDate
+            ? book.publishDate.slice(0, 10)
+            : ""
+    });
+};
 
 
 
@@ -106,6 +119,38 @@ function Home() {
     console.error(error.response?.data || error.message);
     alert(error.response?.data?.Message || "Failed to delete book");
   }
+};
+
+// update request shared
+const handleUpdate = async (e) => {
+    e.preventDefault();
+
+    try {
+        const response = await bookBaseUrl.put(
+            `/${editingId}`,
+            bookForm
+        );
+
+        if (response.data.Success) {
+            alert("Book updated successfully!");
+
+            setEditingId(null);
+
+            setBookForm({
+                bookName: "",
+                bookTitle: "",
+                Author: "",
+                price: "",
+                publishDate: ""
+            });
+
+            // Yahan apna existing GET function call karna
+            // taake updated books list dobara load ho.
+        }
+    } catch (error) {
+        console.error("Update error:", error.response?.data || error.message);
+        alert("Failed to update book");
+    }
 };
 
   return (
@@ -255,6 +300,7 @@ function Home() {
                       <button
                         type="button"
                         className="rounded-md bg-blue-600 px-3 py-2 text-white hover:bg-blue-700"
+                        onClick={() => handleEdit(book)}
                       >
                         Edit
                       </button>

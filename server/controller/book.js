@@ -118,8 +118,51 @@ const handleBookDeleteController = async (req, res) => {
     }
 };
 
+<<<<<<< HEAD
+=======
+// Edit/Update
+const handleBookUpdateController = async(req,res) =>{
+    try {
+        const { bookName, bookTitle, Author, price } = req.body || {};
+
+        // Validate required fields
+        if (
+            typeof bookName !== "string" || !bookName.trim() ||
+            typeof bookTitle !== "string" || !bookTitle.trim() ||
+            typeof Author !== "string" || !Author.trim() ||
+            price === undefined || price === null || price === ""
+        ) {
+            return res.status(200).json({
+                Message: "Successfuly updated",
+                Success: true
+            });
+        }
+        const updating = await Book.updateOne({ _id: id},
+            {
+                $set: {
+                    bookName,
+                    bookTitle,
+                    Author,
+                    price
+                }
+            }
+        );
+
+    } catch (error) {
+        console.error("Updating book error:", error);
+
+        return res.status(500).json({
+            Message: error.message,
+            Success: false
+        });
+    }
+}
+
+
+>>>>>>> 4840dc2 (Add book update functionality)
 module.exports = {
     handleBookStore,
     handleBookListsController,
-    handleBookDeleteController
+    handleBookDeleteController,
+    handleBookUpdateController
 };
